@@ -30,7 +30,7 @@ jobs:
 
   release:
     needs: [test, changes]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && ${{ needs.changes.outputs.version_changed == 'true' }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.version_changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
