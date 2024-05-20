@@ -9,16 +9,30 @@ on:
       - main
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      version_changed: ${{ steps.filter.outputs.version_changed }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            version_changed:
+              - 'version.txt'  # Adjust the path as needed
+
   test:
     runs-on: ubuntu-latest
     steps:
       - name: Echo Test
         run: echo "This is supposed to be a test job"
-        
+
   release:
-    needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [test, changes]  # Ensure release depends on changes detection and test
+    if: ${{ needs.changes.outputs.version_changed == 'true' }} && github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Extract version
         run: cat version.txt
