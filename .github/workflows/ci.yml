@@ -29,10 +29,14 @@ jobs:
         run: echo "This is supposed to be a test job"
 
   release:
-    needs: [test, changes]  # Ensure release depends on changes detection and test
+    needs: [test, changes]
     if: ${{ needs.changes.outputs.version_changed == 'true' }} && github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Debug Output
+        run: |
+              echo "Event: ${{ github.event_name }}, Branch: ${{ github.ref }}"
       - name: Extract version
         run: cat version.txt
+      
