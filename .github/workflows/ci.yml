@@ -11,7 +11,7 @@ on:
 jobs:
   # Checks for changes in version.txt (used for release job)
   changes:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       version_changed: ${{ steps.filter.outputs.version_changed }}
     steps:
@@ -27,7 +27,7 @@ jobs:
     needs: changes
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-22.04, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -44,14 +44,14 @@ jobs:
   release:
     needs: [build, changes]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.version_changed == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Download Artifacts
         uses: actions/download-artifact@v2
         with:
-          name: cover-agent-ubuntu-latest
-          path: dist/ubuntu-latest
+          name: cover-agent-ubuntu-22.04
+          path: dist/ubuntu-22.04
       - uses: actions/download-artifact@v2
         with:
           name: cover-agent-windows-latest
@@ -78,7 +78,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/ubuntu-latest/cover-agent.txt
+          asset_path: dist/ubuntu-22.04/cover-agent.txt
           asset_name: cover-agent-ubuntu.txt
           asset_content_type: text/plain
       - name: Upload Release Asset (Windows)
